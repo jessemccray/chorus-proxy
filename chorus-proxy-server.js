@@ -1,12 +1,9 @@
 // chorus-proxy-server.js
-// A minimal Node.js Express server to securely proxy Chorus.ai API requests
-
 const express = require('express');
 const axios = require('axios');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Replace with your actual Chorus token
 const CHORUS_API_KEY = 'e3be84dc6c55424e9e81d1fc32865749';
 const CHORUS_BASE_URL = 'https://chorus.ai/v3';
 
@@ -33,6 +30,21 @@ app.get('/engagements', async (req, res) => {
     const response = await axios.get(`${CHORUS_BASE_URL}/engagements`, {
       headers: { Authorization: CHORUS_API_KEY },
       params: { user_id }
+    });
+    res.json(response.data);
+  } catch (err) {
+    res.status(err.response?.status || 500).json({ error: err.message });
+  }
+});
+
+// POST /engagements/filter
+app.post('/engagements/filter', async (req, res) => {
+  try {
+    const response = await axios.post(`${CHORUS_BASE_URL}/engagements/filter`, req.body, {
+      headers: {
+        Authorization: CHORUS_API_KEY,
+        'Content-Type': 'application/json'
+      }
     });
     res.json(response.data);
   } catch (err) {
